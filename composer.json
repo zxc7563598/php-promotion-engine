@@ -1,0 +1,20 @@
+{
+  "name": "hejunjie/promotion-engine",
+  "description": "一个 灵活可扩展 的 PHP 促销策略引擎，让购物车的各种复杂促销逻辑（满减、打折、阶梯优惠、会员折扣…）实现更优雅、可维护 ｜ A flexible and scalable PHP promotional strategy engine that enables various complex promotional logics (money off, discounts, tiered offers, member discounts, etc.) in shopping carts to be implemented more elegantly and maintainably.",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Hejunjie\\PromotionEngine\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "何俊杰",
+      "email": "junjie.he.925@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.1"
+  }
+}
