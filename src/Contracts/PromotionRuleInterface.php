@@ -1,16 +1,16 @@
 <?php
 
-namespace Hejunjie\PromotionEngine;
-
+namespace Hejunjie\PromotionEngine\Contracts;
 
 use Hejunjie\PromotionEngine\Models\Cart;
 use Hejunjie\PromotionEngine\Models\User;
+use Hejunjie\PromotionEngine\PromotionResult;
 
 /**
  * 促销规则接口
  * @package Hejunjie\PromotionEngine
  */
-interface PromotionRule
+interface PromotionRuleInterface
 {
     /**
      * 应用促销规则

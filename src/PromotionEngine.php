@@ -2,6 +2,7 @@
 
 namespace Hejunjie\PromotionEngine;
 
+use Hejunjie\PromotionEngine\Contracts\PromotionRuleInterface;
 use Hejunjie\PromotionEngine\Models\Cart;
 use Hejunjie\PromotionEngine\Models\User;
 
@@ -14,7 +15,7 @@ class PromotionEngine
 
     protected array $rules = [];
 
-    public function addRule(PromotionRule $rule): self
+    public function addRule(PromotionRuleInterface $rule): self
     {
         $this->rules[] = $rule;
         return $this;

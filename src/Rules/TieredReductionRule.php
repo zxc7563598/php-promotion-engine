@@ -2,7 +2,7 @@
 
 namespace Hejunjie\PromotionEngine\Rules;
 
-use Hejunjie\PromotionEngine\PromotionRule;
+use Hejunjie\PromotionEngine\Contracts\PromotionRuleInterface;
 use Hejunjie\PromotionEngine\Models\Cart;
 use Hejunjie\PromotionEngine\Models\User;
 use Hejunjie\PromotionEngine\PromotionResult;
@@ -11,7 +11,7 @@ use Hejunjie\PromotionEngine\PromotionResult;
  * 折扣规则：阶梯满 X 元减 Y 元（例：满 100 减 10，满 200 减 30，满 500 减 80（取最高档））
  * @package Hejunjie\PromotionEngine\Rules
  */
-class TieredReductionRule implements PromotionRule
+class TieredReductionRule implements PromotionRuleInterface
 {
     /**
      * 构造函数

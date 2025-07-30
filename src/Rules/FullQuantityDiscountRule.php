@@ -2,13 +2,13 @@
 
 namespace Hejunjie\PromotionEngine\Rules;
 
-use Hejunjie\PromotionEngine\PromotionRule;
+use Hejunjie\PromotionEngine\Contracts\PromotionRuleInterface;
 use Hejunjie\PromotionEngine\Models\Cart;
 use Hejunjie\PromotionEngine\Models\User;
 use Hejunjie\PromotionEngine\PromotionResult;
 
 // 折扣规则：买满 X 件打 Z 折（例：买 3 件打 9 折）
-class FullQuantityDiscountRule implements PromotionRule
+class FullQuantityDiscountRule implements PromotionRuleInterface
 {
     /**
      * 构造函数

@@ -2,7 +2,7 @@
 
 namespace Hejunjie\PromotionEngine\Rules;
 
-use Hejunjie\PromotionEngine\PromotionRule;
+use Hejunjie\PromotionEngine\Contracts\PromotionRuleInterface;
 use Hejunjie\PromotionEngine\Models\Cart;
 use Hejunjie\PromotionEngine\Models\User;
 use Hejunjie\PromotionEngine\PromotionResult;
@@ -11,7 +11,7 @@ use Hejunjie\PromotionEngine\PromotionResult;
  * 折扣规则：VIP 用户享受立减（例：VIP 下单减 5 元）
  * @package Hejunjie\PromotionEngine\Rules
  */
-class VipReductionRule implements PromotionRule
+class VipReductionRule implements PromotionRuleInterface
 {
     /**
      * 构造函数

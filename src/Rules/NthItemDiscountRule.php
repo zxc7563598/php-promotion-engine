@@ -2,7 +2,7 @@
 
 namespace Hejunjie\PromotionEngine\Rules;
 
-use Hejunjie\PromotionEngine\PromotionRule;
+use Hejunjie\PromotionEngine\Contracts\PromotionRuleInterface;
 use Hejunjie\PromotionEngine\Models\Cart;
 use Hejunjie\PromotionEngine\Models\User;
 use Hejunjie\PromotionEngine\PromotionResult;
@@ -11,7 +11,7 @@ use Hejunjie\PromotionEngine\PromotionResult;
  * 折扣规则：第 N 件打 Z 折（例：第 3 件 5 折）
  * @package Hejunjie\PromotionEngine\Rules
  */
-class NthItemDiscountRule implements PromotionRule
+class NthItemDiscountRule implements PromotionRuleInterface
 {
     /**
      * 构造函数
