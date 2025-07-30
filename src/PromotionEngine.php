@@ -2,9 +2,13 @@
 
 namespace Hejunjie\PromotionEngine;
 
+use Hejunjie\PromotionEngine\Contracts\PromotionCalculatorInterface;
 use Hejunjie\PromotionEngine\Contracts\PromotionRuleInterface;
 use Hejunjie\PromotionEngine\Models\Cart;
 use Hejunjie\PromotionEngine\Models\User;
+use Hejunjie\PromotionEngine\Calculators\IndependentCalculator;
+use Hejunjie\PromotionEngine\Calculators\SequentialCalculator;
+use Hejunjie\PromotionEngine\Calculators\LockCalculator;
 
 /**
  * 促销引擎类
@@ -15,6 +19,23 @@ class PromotionEngine
 
     protected array $rules = [];
 
+    protected PromotionCalculatorInterface $calculator;
+
+    public function __construct()
+    {
+        $this->calculator = new IndependentCalculator();
+    }
+
+    public function setMode(string $mode): PromotionCalculatorInterface|\InvalidArgumentException
+    {
+        return match ($mode) {
+            'independent' => $this->calculator = new IndependentCalculator(),
+            'sequential'  => $this->calculator = new SequentialCalculator(),
+            'lock'        => $this->calculator = new LockCalculator(),
+            default       => throw new \InvalidArgumentException("未知模式: $mode"),
+        };
+    }
+
     public function addRule(PromotionRuleInterface $rule): self
     {
         $this->rules[] = $rule;
@@ -23,23 +44,6 @@ class PromotionEngine
 
     public function calculate(Cart $cart, User $user): array
     {
-        // 按优先级排序
-        usort($this->rules, fn($a, $b) => $a->getPriority() <=> $b->getPriority());
-        $totalDiscount = 0;
-        $details = [];
-        foreach ($this->rules as $rule) {
-            $result = $rule->apply($cart, $user);
-            if ($result->hasDiscount()) {
-                $totalDiscount += $result->discount;
-                $details[] = $result->description . " (-¥{$result->discount})";
-            }
-        }
-        // 返回数据
-        return [
-            'original' => $cart->getTotal(),
-            'discount' => $totalDiscount,
-            'final'    => max(0, $cart->getTotal() - $totalDiscount),
-            'details'  => $details
-        ];
+        return $this->calculator->calculate($cart, $user, $this->rules);
     }
 }
