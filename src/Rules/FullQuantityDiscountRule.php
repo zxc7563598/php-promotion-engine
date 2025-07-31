@@ -26,6 +26,14 @@ class FullQuantityDiscountRule implements PromotionRuleInterface
         protected int $priority = 1
     ) {}
 
+    /**
+     * 应用满减规则
+     * 
+     * @param Cart $cart 购物车对象
+     * @param User $user 用户对象
+     * 
+     * @return PromotionResult 规则应用结果（包含优惠金额 & 描述）
+     */
     public function apply(Cart $cart, User $user): PromotionResult
     {
         $items = $cart->filterItemsByTags($this->applicableTags);
@@ -34,6 +42,25 @@ class FullQuantityDiscountRule implements PromotionRuleInterface
             return new PromotionResult($cart->calculateItemsTotal($items) * (1 - $this->discountRate), "指定商品满{$this->minItems}件打" . ($this->discountRate * 10) . "折");
         }
         return new PromotionResult(0, "未满足打折条件");
+    }
+
+    /**
+     * 找出所有符合标签的商品下标
+     * 
+     * @param Cart $cart 
+     * 
+     * @return array 
+     */
+    public function getApplicableItems(Cart $cart): array
+    {
+        $items = $cart->getItems();
+        $indexes = [];
+        foreach ($items as $i => $item) {
+            if (empty($this->applicableTags) || count(array_intersect($this->applicableTags, $item['tags'])) > 0) {
+                $indexes[] = $i;
+            }
+        }
+        return $indexes;
     }
 
     /**

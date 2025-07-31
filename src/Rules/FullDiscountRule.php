@@ -48,6 +48,25 @@ class FullDiscountRule implements PromotionRuleInterface
     }
 
     /**
+     * 找出所有符合标签的商品下标
+     * 
+     * @param Cart $cart 
+     * 
+     * @return array 
+     */
+    public function getApplicableItems(Cart $cart): array
+    {
+        $items = $cart->getItems();
+        $indexes = [];
+        foreach ($items as $i => $item) {
+            if (empty($this->applicableTags) || count(array_intersect($this->applicableTags, $item['tags'])) > 0) {
+                $indexes[] = $i;
+            }
+        }
+        return $indexes;
+    }
+
+    /**
      * 获取规则优先级
      * 
      * @return int 
