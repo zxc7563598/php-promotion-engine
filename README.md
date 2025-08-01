@@ -43,25 +43,29 @@ $cart->addItem('商品F', 200, 1, ['electronics']);
 
 // Initialize the promotion engine
 $engine = new PromotionEngine();
+// Explanation of promotion calculation mode:
+//
+// independent (independent mode):
+// Each rule calculates the discount amount separately based on the "original price of the product",
+// Finally, the discounts will be consolidated, and the total price will not be affected by intermediate calculations from other rules.
+//
+// sequential (discount-on-discount mode):
+// Each rule continues to calculate based on the "previously calculated price", resulting in a "discount on discount" effect.
+// When a rule involves multiple products, the discount amount will be allocated based on the proportion of each product's original price in the total combined price,
+// To ensure that the price of each item is updated correctly in subsequent calculations.
+//
+// lock (locked mode):
+// Each item will only be discounted by one rule at most, and subsequent rules will not apply repeated discounts to items that have already been locked.
+// Applicable to business scenarios where "a certain product can only enjoy one discount" (such as flash sales, exclusive coupons, etc.).
+$engine->setMode('independent');
 
 // Register all rules
 $engine->addRule(new Rules\FullDiscountRule(200, 0.9));  // 10% off for purchases over 200
 $engine->addRule(new Rules\FullQuantityReductionRule(3, 20));  // Buy 3 or more and get 20% off
 $engine->addRule(new Rules\NthItemDiscountRule(3, 0.5));  // Third item is 50% off
-$engine->addRule(new Rules\TieredDiscountRule([
-    100 => 0.95,
-    300 => 0.9,
-    500 => 0.85
-]));  // Ladder full fold
 $engine->addRule(new Rules\VipDiscountRule(0.95));  // 5% discount for VIP
 $engine->addRule(new Rules\FullQuantityDiscountRule(5, 0.9));  // 10% off for purchases of 5 items or more
 $engine->addRule(new Rules\FullReductionRule(100, 20));  // 20 off for purchases over 100
-$engine->addRule(new Rules\NthItemReductionRule(3, 9.9));  // The third item is priced at 9.9 yuan
-$engine->addRule(new Rules\TieredReductionRule([
-    100 => 10,
-    200 => 30,
-    500 => 80
-]));  // Ladder full reduction
 $engine->addRule(new Rules\VipReductionRule(5));  // VIP: 5 yuan off
 
 // Perform calculation
@@ -80,18 +84,15 @@ foreach ($result['details'] as $detail) {
 // 输出内容：
 // === test result ===
 // original price: ¥540
-// discount: -¥391.1
-// final: ¥148.9
+// discount: -¥200
+// final: ¥340
 // Discount Details:
 // - 指定商品满200元打0.9折 (-¥54)
 // - 指定商品满3件减20 (-¥20)
 // - 指定商品第3件打5折 (-¥20)
-// - 指定商品满500元打8.5折 (-¥81)
 // - VIP 0.95 折 (-¥27)
 // - 指定商品满5件打9折 (-¥54)
 // - 指定商品满100减20 (-¥20)
-// - 指定商品第3件特价9.9元 (-¥30.1)
-// - 指定商品满500减80 (-¥80)
 // - VIP 立减 5 元 (-¥5)
 
 ```

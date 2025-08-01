@@ -43,25 +43,29 @@ $cart->addItem('商品F', 200, 1, ['electronics']);
 
 // 初始化促销引擎
 $engine = new PromotionEngine();
+// 促销计算模式说明：
+//
+// independent（独立模式）：
+//   每条规则基于「商品原价」单独计算优惠金额，
+//   最后再统一汇总优惠，总价不会受到其他规则的中间计算结果影响。
+//
+// sequential（折上折模式）：
+//   每条规则基于「上一次计算后的价格」继续计算，形成“折上折”效果。
+//   当一条规则涉及多个商品时，会按商品原价在组合总价中的比例分摊优惠金额，
+//   以确保每件商品的价格在后续计算中被正确更新。
+//
+// lock（锁定模式）：
+//   每件商品最多只会被一条规则折扣，后续规则不会再对已被锁定的商品重复优惠。
+//   适用于“某件商品只能享受一次优惠”的业务场景（如秒杀、专属券等）。
+$engine->setMode('independent');
 
 // 注册所有规则
 $engine->addRule(new Rules\FullDiscountRule(200, 0.9));  // 满200打9折
 $engine->addRule(new Rules\FullQuantityReductionRule(3, 20));  // 买满3件减20
 $engine->addRule(new Rules\NthItemDiscountRule(3, 0.5));  // 第三件5折
-$engine->addRule(new Rules\TieredDiscountRule([
-    100 => 0.95,
-    300 => 0.9,
-    500 => 0.85
-]));  // 阶梯满折
 $engine->addRule(new Rules\VipDiscountRule(0.95));  // VIP 95折
 $engine->addRule(new Rules\FullQuantityDiscountRule(5, 0.9));  // 买满5件打9折
 $engine->addRule(new Rules\FullReductionRule(100, 20));  // 满100减20
-$engine->addRule(new Rules\NthItemReductionRule(3, 9.9));  // 第三件9.9元
-$engine->addRule(new Rules\TieredReductionRule([
-    100 => 10,
-    200 => 30,
-    500 => 80
-]));  // 阶梯满减
 $engine->addRule(new Rules\VipReductionRule(5));  // VIP立减5元
 
 // 执行计算
@@ -80,18 +84,15 @@ foreach ($result['details'] as $detail) {
 // 输出内容：
 // === 测试结果 ===
 // 原价: ¥540
-// 优惠: -¥391.1
-// 应付: ¥148.9
+// 优惠: -¥200
+// 应付: ¥340
 // 优惠明细:
 // - 指定商品满200元打0.9折 (-¥54)
 // - 指定商品满3件减20 (-¥20)
 // - 指定商品第3件打5折 (-¥20)
-// - 指定商品满500元打8.5折 (-¥81)
 // - VIP 0.95 折 (-¥27)
 // - 指定商品满5件打9折 (-¥54)
 // - 指定商品满100减20 (-¥20)
-// - 指定商品第3件特价9.9元 (-¥30.1)
-// - 指定商品满500减80 (-¥80)
 // - VIP 立减 5 元 (-¥5)
 
 ```
