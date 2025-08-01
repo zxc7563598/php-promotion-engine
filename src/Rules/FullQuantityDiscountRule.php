@@ -31,12 +31,13 @@ class FullQuantityDiscountRule implements PromotionRuleInterface
      * 
      * @param Cart $cart 购物车对象
      * @param User $user 用户对象
+     * @param array $eligibleIndexes 符合条件的商品下标列表
      * 
      * @return PromotionResult 规则应用结果（包含优惠金额 & 描述）
      */
-    public function apply(Cart $cart, User $user): PromotionResult
+    public function apply(Cart $cart, User $user, array $eligibleIndexes = []): PromotionResult
     {
-        $items = $cart->filterItemsByTags($this->applicableTags);
+        $items = array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes));
         $eligibleTotal = $cart->getItemCount($items);
         if ($eligibleTotal >= $this->minItems) {
             return new PromotionResult($cart->calculateItemsTotal($items) * (1 - $this->discountRate), "指定商品满{$this->minItems}件打" . ($this->discountRate * 10) . "折");

@@ -32,15 +32,16 @@ class VipDiscountRule implements PromotionRuleInterface
      * 
      * @param Cart $cart 购物车对象
      * @param User $user 用户对象
+     * @param array $eligibleIndexes 符合条件的商品下标列表
      * 
      * @return PromotionResult 规则应用结果（包含优惠金额 & 描述）
      */
-    public function apply(Cart $cart, User $user): PromotionResult
+    public function apply(Cart $cart, User $user, array $eligibleIndexes = []): PromotionResult
     {
         if (!$user->isVip()){
             return new PromotionResult(0, "非VIP用户");
         }
-        $items = $cart->filterItemsByTags($this->applicableTags);
+        $items = array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes));
         $eligibleTotal = $cart->calculateItemsTotal($items);
         $discount = $eligibleTotal * (1 - $this->discountRate);
         return new PromotionResult($discount, "VIP {$this->discountRate} 折");
