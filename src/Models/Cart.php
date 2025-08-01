@@ -23,7 +23,8 @@ class Cart
             'price' => $price,
             'qty' => $qty,
             'tags' => $tags,
-            'original_price' => $price
+            'original_price' => $price, // 保留原价以便计算折扣
+            'locked' => false // 锁定状态，防止重复折扣
         ];
         return $this;
     }
@@ -98,6 +99,11 @@ class Cart
 
     /**
      * 动态修改指定商品价格
+     * 
+     * @param int $index 
+     * @param float $newPrice 
+     * 
+     * @return void 
      */
     public function updateItemPrice(int $index, float $newPrice): void
     {
@@ -106,12 +112,14 @@ class Cart
 
     /**
      * 批量减价（给满减/满折按比例分摊用）
+     * 
+     * @param array $indexes 商品下标
+     * @param float $totalDiscount 优惠价格
+     * 
+     * @return void 
      */
     public function applyDiscountToItems(array $indexes, float $totalDiscount): void
     {
-        $shop_name = [];
-        $shop_details = [];
-
         $totalPrice = 0;
         foreach ($indexes as $i) {
             $totalPrice += $this->items[$i]['price'] * $this->items[$i]['qty'];
@@ -119,18 +127,34 @@ class Cart
         foreach ($indexes as $i) {
             $item = &$this->items[$i];
             $shop_name[] = $item['name'];
-            $share = round(($item['price'] * $item['qty']) / $totalPrice,4);
+            $share = round(($item['price'] * $item['qty']) / $totalPrice, 4);
             $item['price'] -= round(($totalDiscount * $share) / $item['qty'], 2);
-            $shop_details[] = [
-                '名称' => $item['name'],
-                '原价' => $item['original_price'],
-                '现价' => $item['price'],
-                '数量' => $item['qty'],
-                '商品优惠价格中的占比' => $share*100 . '%',
-                '优惠金额' => round($totalDiscount * $share, 2)
-            ];
         }
-        echo '[批量减价]: 商品 ' . json_encode($shop_name, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '减少金额' . $totalDiscount . "\n";
-        echo '[批量减价]: ' . json_encode($shop_details, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n\n";
+    }
+
+    /**
+     * 锁定指定商品，防止重复折扣
+     * 
+     * @param array $indexes 商品下标
+     * 
+     * @return void 
+     */
+    public function lockItems(array $indexes): void
+    {
+        foreach ($indexes as $i) {
+            $this->items[$i]['locked'] = true;
+        }
+    }
+
+    /**
+     * 检查指定商品是否被锁定
+     * 
+     * @param int $index 商品下标
+     * 
+     * @return bool 
+     */
+    public function isLocked(int $index): bool
+    {
+        return $this->items[$index]['locked'] ?? false;
     }
 }
