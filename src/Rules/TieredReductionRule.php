@@ -40,7 +40,7 @@ class TieredReductionRule implements PromotionRuleInterface
      */
     public function apply(Cart $cart, User $user, array $eligibleIndexes = []): PromotionResult
     {
-        $items = array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes));
+        $items = array_flip($eligibleIndexes) ? array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes)) : $cart->filterItemsByTags($this->applicableTags);
         $eligibleTotal = $cart->calculateItemsTotal($items);
         $bestReduction = 0;
         $bestThreshold = 0;

@@ -41,7 +41,7 @@ class NthItemReductionRule implements PromotionRuleInterface
     public function apply(Cart $cart, User $user, array $eligibleIndexes = []): PromotionResult
     {
         // 过滤适用的商品
-        $items = array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes));
+        $items = array_flip($eligibleIndexes) ? array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes)) : $cart->filterItemsByTags($this->applicableTags);
         if (count($items) >= $this->nthItem) {
             $nthItem = $items[$this->nthItem - 1];
             $discountAmount = $nthItem['price'] - $this->specialPrice;

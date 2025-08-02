@@ -37,7 +37,7 @@ class FullQuantityReductionRule implements PromotionRuleInterface
      */
     public function apply(Cart $cart, User $user, array $eligibleIndexes = []): PromotionResult
     {
-        $items = array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes));
+        $items = array_flip($eligibleIndexes) ? array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes)) : $cart->filterItemsByTags($this->applicableTags);
         $eligibleTotal = $cart->getItemCount($items);
         if ($eligibleTotal >= $this->minItems) {
             return new PromotionResult($this->reduction, "指定商品满{$this->minItems}件减{$this->reduction}");

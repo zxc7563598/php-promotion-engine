@@ -40,7 +40,7 @@ class FullDiscountRule implements PromotionRuleInterface
      */
     public function apply(Cart $cart, User $user, array $eligibleIndexes = []): PromotionResult
     {
-        $items = array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes));
+        $items = array_flip($eligibleIndexes) ? array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes)) : $cart->filterItemsByTags($this->applicableTags);
         $eligibleTotal = $cart->calculateItemsTotal($items);
         if ($eligibleTotal >= $this->threshold) {
             return new PromotionResult($eligibleTotal * (1 - $this->discountRate), "指定商品满{$this->threshold}元打{$this->discountRate}折");
