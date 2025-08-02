@@ -30,7 +30,8 @@ class LockCalculator implements PromotionCalculatorInterface
             'original' => $cart->getOriginalTotal(),
             'discount' => $totalDiscount,
             'final'    => max(0, $cart->getTotal()-$totalDiscount),
-            'details'  => $details
+            'details'  => $details,
+            'items'    => $cart->getItems()
         ];
     }
 }

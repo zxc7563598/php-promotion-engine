@@ -24,7 +24,8 @@ class IndependentCalculator implements PromotionCalculatorInterface
             'original' => $cart->getTotal(),
             'discount' => $totalDiscount,
             'final'    => max(0, $cart->getTotal() - $totalDiscount),
-            'details'  => $details
+            'details'  => $details,
+            'items'    => $cart->getItems()
         ];
     }
 }

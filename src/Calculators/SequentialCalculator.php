@@ -29,7 +29,8 @@ class SequentialCalculator implements PromotionCalculatorInterface
             'original' => $cart->getOriginalTotal(),
             'discount' => $totalDiscount,
             'final'    => $cart->getOriginalTotal() - $totalDiscount,
-            'details'  => $details
+            'details'  => $details,
+            'items'    => $cart->getItems()
         ];
     }
 }
