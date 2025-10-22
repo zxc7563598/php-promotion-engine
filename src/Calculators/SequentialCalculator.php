@@ -16,11 +16,12 @@ class SequentialCalculator implements PromotionCalculatorInterface
         foreach ($rules as $rule) {
             $result = $rule->apply($cart, $user);
             if ($result->hasDiscount()) {
-                $totalDiscount += $result->discount;
-                $details[] = $result->description . " (-¥{$result->discount})";
+                $discount = round($result->discount, 2);
+                $totalDiscount += $discount;
+                $details[] = $result->description . " (-¥{$discount})";
                 if (method_exists($rule, 'getApplicableItems')) {
                     $indexes = $rule->getApplicableItems($cart);
-                    $cart->applyDiscountToItems($indexes, $result->discount);
+                    $cart->applyDiscountToItems($indexes, $discount);
                 }
                 $totalDiscount = round($totalDiscount, 2); // 确保总折扣是两位小数
             }

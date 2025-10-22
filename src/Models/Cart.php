@@ -120,15 +120,33 @@ class Cart
      */
     public function applyDiscountToItems(array $indexes, float $totalDiscount): void
     {
-        $totalPrice = 0;
+        if (empty($indexes) || $totalDiscount <= 0) {
+            return;
+        }
+        $totalPrice = 0.0;
         foreach ($indexes as $i) {
             $totalPrice += $this->items[$i]['price'] * $this->items[$i]['qty'];
         }
+        if ($totalPrice <= 0) {
+            return;
+        }
+
+        $distributed = 0.0;
+        $lastIndex = $indexes[array_key_last($indexes)];
         foreach ($indexes as $i) {
             $item = &$this->items[$i];
-            $shop_name[] = $item['name'];
-            $share = round(($item['price'] * $item['qty']) / $totalPrice, 4);
-            $item['price'] -= round(($totalDiscount * $share) / $item['qty'], 2);
+            $share = ($item['price'] * $item['qty']) / $totalPrice;
+            $unitReduction = round(($totalDiscount * $share) / $item['qty'], 2);
+            $distributed += $unitReduction * $item['qty'];
+            $item['price'] = max(0, round($item['price'] - $unitReduction, 2));
+            unset($item);
+        }
+
+        // 尾差补偿，保证分摊总额与 totalDiscount 一致
+        $remainder = round($totalDiscount - $distributed, 2);
+        if (abs($remainder) > 0) {
+            $qty = $this->items[$lastIndex]['qty'];
+            $this->items[$lastIndex]['price'] = max(0, round($this->items[$lastIndex]['price'] - ($remainder / $qty), 2));
         }
     }
 
