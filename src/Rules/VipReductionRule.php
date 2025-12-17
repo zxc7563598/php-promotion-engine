@@ -13,6 +13,10 @@ use Hejunjie\PromotionEngine\PromotionResult;
  */
 class VipReductionRule implements PromotionRuleInterface
 {
+    protected float $reduction;
+    protected array $applicableTags;
+    protected int $priority;
+
     /**
      * 构造函数
      * @param float $reduction 立减金额
@@ -21,11 +25,12 @@ class VipReductionRule implements PromotionRuleInterface
      * 
      * @return void 
      */
-    public function __construct(
-        protected float $reduction,
-        protected array $applicableTags = [],
-        protected int $priority = 1
-    ) {}
+    public function __construct(float $reduction, array $applicableTags = [], int $priority = 1)
+    {
+        $this->reduction = $reduction;
+        $this->applicableTags = $applicableTags;
+        $this->priority = $priority;
+    }
 
     /**
      * 应用满减规则

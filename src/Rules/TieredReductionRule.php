@@ -13,6 +13,10 @@ use Hejunjie\PromotionEngine\PromotionResult;
  */
 class TieredReductionRule implements PromotionRuleInterface
 {
+    protected array $tiers;
+    protected array $applicableTags;
+    protected int $priority;
+
     /**
      * 构造函数
      * @param array $tiers 阶梯数组，如 [100 => 10, 200 => 30, 500 => 80]
@@ -21,11 +25,11 @@ class TieredReductionRule implements PromotionRuleInterface
      * 
      * @return void
      */
-    public function __construct(
-        protected array $tiers,
-        protected array $applicableTags = [],
-        protected int $priority = 1
-    ) {
+    public function __construct(array $tiers, array $applicableTags = [], int $priority = 1)
+    {
+        $this->tiers = $tiers;
+        $this->applicableTags = $applicableTags;
+        $this->priority = $priority;
         ksort($this->tiers);
     }
 

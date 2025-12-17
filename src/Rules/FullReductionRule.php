@@ -13,6 +13,11 @@ use Hejunjie\PromotionEngine\PromotionResult;
  */
 class FullReductionRule implements PromotionRuleInterface
 {
+    protected float $threshold;
+    protected float $reduction;
+    protected array $applicableTags;
+    protected int $priority;
+
     /**
      * 构造函数
      * @param float $threshold 满足满减的金额阈值
@@ -22,12 +27,13 @@ class FullReductionRule implements PromotionRuleInterface
      * 
      * @return void
      */
-    public function __construct(
-        protected float $threshold,
-        protected float $reduction,
-        protected array $applicableTags = [],
-        protected int $priority = 1
-    ) {}
+    public function __construct(float $threshold, float $reduction, array $applicableTags = [], int $priority = 1)
+    {
+        $this->threshold = $threshold;
+        $this->reduction = $reduction;
+        $this->applicableTags = $applicableTags;
+        $this->priority = $priority;
+    }
 
     /**
      * 应用满减规则

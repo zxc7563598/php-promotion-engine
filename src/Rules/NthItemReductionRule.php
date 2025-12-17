@@ -13,6 +13,11 @@ use Hejunjie\PromotionEngine\PromotionResult;
  */
 class NthItemReductionRule implements PromotionRuleInterface
 {
+    protected int $nthItem;
+    protected float $specialPrice;
+    protected array $applicableTags;
+    protected int $priority;
+
     /**
      * 构造函数
      * @param int $nthItem 第几件
@@ -22,12 +27,13 @@ class NthItemReductionRule implements PromotionRuleInterface
      * 
      * @return void
      */
-    public function __construct(
-        protected int $nthItem,
-        protected float $specialPrice,
-        protected array $applicableTags = [],
-        protected int $priority = 1
-    ) {}
+    public function __construct(int $nthItem, float $specialPrice, array $applicableTags = [], int $priority = 1)
+    {
+        $this->nthItem = $nthItem;
+        $this->specialPrice = $specialPrice;
+        $this->applicableTags = $applicableTags;
+        $this->priority = $priority;
+    }
 
     /**
      * 应用满减规则

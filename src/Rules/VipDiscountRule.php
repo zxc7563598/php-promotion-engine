@@ -13,6 +13,10 @@ use Hejunjie\PromotionEngine\PromotionResult;
  */
 class VipDiscountRule implements PromotionRuleInterface
 {
+    protected float $discountRate;
+    protected array $applicableTags;
+    protected int $priority;
+
     /**
      * 构造函数
      * @param float $discountRate 折扣率（0.8 = 8折）
@@ -21,11 +25,12 @@ class VipDiscountRule implements PromotionRuleInterface
      * 
      * @return void 
      */
-    public function __construct(
-        protected float $discountRate,
-        protected array $applicableTags = [],
-        protected int $priority = 1
-    ) {}
+    public function __construct(float $discountRate, array $applicableTags = [], int $priority = 1)
+    {
+        $this->discountRate = $discountRate;
+        $this->applicableTags = $applicableTags;
+        $this->priority = $priority;
+    }
 
     /**
      * 应用满减规则

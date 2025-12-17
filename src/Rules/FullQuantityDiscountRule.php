@@ -10,6 +10,11 @@ use Hejunjie\PromotionEngine\PromotionResult;
 // 折扣规则：买满 X 件打 Z 折（例：买 3 件打 9 折）
 class FullQuantityDiscountRule implements PromotionRuleInterface
 {
+    protected int $minItems;
+    protected float $discountRate;
+    protected array $applicableTags;
+    protected int $priority;
+
     /**
      * 构造函数
      * @param int $minItems 满足打折的最少购买数量
@@ -19,12 +24,13 @@ class FullQuantityDiscountRule implements PromotionRuleInterface
      * 
      * @return void
      */
-    public function __construct(
-        protected int $minItems,
-        protected float $discountRate,
-        protected array $applicableTags = [],
-        protected int $priority = 1
-    ) {}
+    public function __construct(int $minItems, float $discountRate, array $applicableTags = [], int $priority = 1)
+    {
+        $this->minItems = $minItems;
+        $this->discountRate = $discountRate;
+        $this->applicableTags = $applicableTags;
+        $this->priority = $priority;
+    }
 
     /**
      * 应用满减规则

@@ -8,10 +8,14 @@ namespace Hejunjie\PromotionEngine;
  */
 class PromotionResult
 {
-    public function __construct(
-        public float $discount,       // 优惠金额
-        public string $description    // 优惠描述
-    ) {}
+    public float $discount;       // 优惠金额
+    public string $description;    // 优惠描述
+
+    public function __construct(float $discount, string $description)
+    {
+        $this->discount = $discount;
+        $this->description = $description;
+    }
 
     /**
      * 是否有优惠

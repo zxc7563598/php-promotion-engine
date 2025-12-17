@@ -26,14 +26,21 @@ class PromotionEngine
         $this->calculator = new IndependentCalculator();
     }
 
-    public function setMode(string $mode): PromotionCalculatorInterface|\InvalidArgumentException
+    public function setMode(string $mode): PromotionCalculatorInterface
     {
-        return match ($mode) {
-            'independent' => $this->calculator = new IndependentCalculator(),
-            'sequential'  => $this->calculator = new SequentialCalculator(),
-            'lock'        => $this->calculator = new LockCalculator(),
-            default       => throw new \InvalidArgumentException("未知模式: $mode"),
-        };
+        switch ($mode) {
+            case 'independent':
+                $this->calculator = new IndependentCalculator();
+                return $this->calculator;
+            case 'sequential':
+                $this->calculator = new SequentialCalculator();
+                return $this->calculator;
+            case 'lock':
+                $this->calculator = new LockCalculator();
+                return $this->calculator;
+            default:
+                throw new \InvalidArgumentException("未知模式: $mode");
+        }
     }
 
     public function addRule(PromotionRuleInterface $rule): self

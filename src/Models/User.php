@@ -4,7 +4,12 @@ namespace Hejunjie\PromotionEngine\Models;
 
 class User
 {
-    public function __construct(protected bool $vip = false) {}
+    protected bool $vip;
+
+    public function __construct(bool $vip = false)
+    {
+        $this->vip = $vip;
+    }
 
     /**
      * 检查用户是否为VIP
