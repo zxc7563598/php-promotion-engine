@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\PromotionEngine\Contracts;
 
 use Hejunjie\PromotionEngine\Models\Cart;

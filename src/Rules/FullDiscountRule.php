@@ -1,31 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\PromotionEngine\Rules;
 
-use Hejunjie\PromotionEngine\Contracts\PromotionRuleInterface;
 use Hejunjie\PromotionEngine\Models\Cart;
 use Hejunjie\PromotionEngine\Models\User;
 use Hejunjie\PromotionEngine\PromotionResult;
 
 /**
- * 折扣规则：满 X 元打 Z 折（例：满 200 打 8 折）
+ * 满折规则：满 X 元打 Z 折
+ *
+ * 当购物车中符合条件的商品总价达到指定阈值时，对总额打折。
+ *
+ * 示例：满 200 打 8 折（discountRate = 0.8）
+ *
  * @package Hejunjie\PromotionEngine\Rules
  */
-class FullDiscountRule implements PromotionRuleInterface
+class FullDiscountRule extends AbstractPromotionRule
 {
+    /**
+     * 满折金额阈值（元）
+     *
+     * @var float
+     */
     protected float $threshold;
+
+    /**
+     * 折扣率（0.8 表示 8 折）
+     *
+     * @var float
+     */
     protected float $discountRate;
-    protected array $applicableTags;
-    protected int $priority;
 
     /**
      * 构造函数
-     * @param float $threshold 满足满减的金额阈值
-     * @param float $discountRate 折扣率（0.8 = 8折）
-     * @param array $applicableTags 适用的商品标签，空数组则为不限标签
-     * @param int $priority 优先级
-     * 
-     * @return void
+     *
+     * @param float $threshold      满足条件的金额阈值（元）
+     * @param float $discountRate   折扣率（0.8 = 8折）
+     * @param array $applicableTags 适用的商品标签，空数组表示不限标签
+     * @param int   $priority       优先级（数值越小优先级越高）
      */
     public function __construct(float $threshold, float $discountRate, array $applicableTags = [], int $priority = 1)
     {
@@ -36,60 +50,24 @@ class FullDiscountRule implements PromotionRuleInterface
     }
 
     /**
-     * 应用满减规则
-     * 
-     * @param Cart $cart 购物车对象
-     * @param User $user 用户对象
-     * @param array $eligibleIndexes 符合条件的商品下标列表
-     * 
-     * @return PromotionResult 规则应用结果（包含优惠金额 & 描述）
+     * 应用满折规则
+     *
+     * @param Cart  $cart             购物车对象
+     * @param User  $user             用户对象
+     * @param array $eligibleIndexes  符合条件的商品下标列表（锁模式使用）
+     *
+     * @return PromotionResult 规则应用结果
      */
     public function apply(Cart $cart, User $user, array $eligibleIndexes = []): PromotionResult
     {
-        $items = array_flip($eligibleIndexes) ? array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes)) : $cart->filterItemsByTags($this->applicableTags);
+        $items = $this->filterEligibleItems($cart, $eligibleIndexes);
         $eligibleTotal = $cart->calculateItemsTotal($items);
+
         if ($eligibleTotal >= $this->threshold) {
-            return new PromotionResult($eligibleTotal * (1 - $this->discountRate), "指定商品满{$this->threshold}元打{$this->discountRate}折");
+            $discount = $eligibleTotal * (1 - $this->discountRate);
+            return new PromotionResult($discount, "指定商品满{$this->threshold}元打" . ($this->discountRate * 10) . "折");
         }
-        return new PromotionResult(0, "未满足满减条件");
-    }
 
-    /**
-     * 找出所有符合标签的商品下标
-     * 
-     * @param Cart $cart 
-     * 
-     * @return array 
-     */
-    public function getApplicableItems(Cart $cart): array
-    {
-        $items = $cart->getItems();
-        $indexes = [];
-        foreach ($items as $i => $item) {
-            if (empty($this->applicableTags) || count(array_intersect($this->applicableTags, $item['tags'])) > 0) {
-                $indexes[] = $i;
-            }
-        }
-        return $indexes;
-    }
-
-    /**
-     * 获取规则优先级
-     * 
-     * @return int 
-     */
-    public function getPriority(): int
-    {
-        return $this->priority;
-    }
-
-    /**
-     * 获取适用的商品标签
-     * 
-     * @return array 
-     */
-    public function getApplicableTags(): array
-    {
-        return $this->applicableTags;
+        return new PromotionResult(0, "未满足满折条件");
     }
 }

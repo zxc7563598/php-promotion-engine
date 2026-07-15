@@ -1,11 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\PromotionEngine\Calculators;
 
 use Hejunjie\PromotionEngine\Contracts\PromotionCalculatorInterface;
 use Hejunjie\PromotionEngine\Models\Cart;
 use Hejunjie\PromotionEngine\Models\User;
 
+/**
+ * 锁定模式
+ * 每件商品最多只会被一条规则折扣，后续规则不会再对已被锁定的商品重复优惠
+ * 适用于“某件商品只能享受一次优惠”的业务场景（如秒杀、专属券等）
+ */
 class LockCalculator implements PromotionCalculatorInterface
 {
     public function calculate(Cart $cart, User $user, array $rules): array

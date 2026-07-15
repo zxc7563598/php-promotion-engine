@@ -1,7 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\PromotionEngine\Models;
 
+/**
+ * 用户模型
+ *
+ * 代表下单用户，包含 VIP 身份标识等基本信息。
+ *
+ * @package Hejunjie\PromotionEngine\Models
+ */
 class User
 {
     protected bool $vip;

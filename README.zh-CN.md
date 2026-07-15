@@ -1,9 +1,6 @@
 # 🛒 hejunjie/promotion-engine
 
-<div align="center">
-  <a href="./README.md">English</a>｜<a href="./README.zh-CN.md">简体中文</a>
-  <hr width="50%"/>
-</div>
+[English](./README.md) ｜ 简体中文
 
 一个 **灵活可扩展** 的 PHP 促销策略引擎，让购物车的各种复杂促销逻辑（满减、打折、阶梯优惠、会员折扣…）实现更优雅、可维护。
 

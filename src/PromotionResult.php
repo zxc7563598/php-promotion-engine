@@ -1,9 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\PromotionEngine;
 
 /**
- * 促销结果类
+ * 促销计算结果
+ *
+ * 封装单条规则应用后返回的优惠金额和描述信息。
+ * 金额单位为元，支持两位小数精度。
+ *
  * @package Hejunjie\PromotionEngine
  */
 class PromotionResult

@@ -1,29 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\PromotionEngine\Rules;
 
-use Hejunjie\PromotionEngine\Contracts\PromotionRuleInterface;
 use Hejunjie\PromotionEngine\Models\Cart;
 use Hejunjie\PromotionEngine\Models\User;
 use Hejunjie\PromotionEngine\PromotionResult;
 
 /**
- * 折扣规则：VIP 用户享受折扣（例：VIP 9 折）
+ * VIP 折扣规则：VIP 用户享受指定折扣
+ *
+ * VIP 用户对符合条件的商品享受折扣，非 VIP 用户无优惠。
+ *
+ * 示例：VIP 9 折（discountRate = 0.9）
+ *
  * @package Hejunjie\PromotionEngine\Rules
  */
-class VipDiscountRule implements PromotionRuleInterface
+class VipDiscountRule extends AbstractPromotionRule
 {
+    /**
+     * 折扣率（0.8 表示 8 折）
+     *
+     * @var float
+     */
     protected float $discountRate;
-    protected array $applicableTags;
-    protected int $priority;
 
     /**
      * 构造函数
-     * @param float $discountRate 折扣率（0.8 = 8折）
-     * @param array $applicableTags 适用的商品标签，空数组则为不限标签
-     * @param int $priority 优先级
-     * 
-     * @return void 
+     *
+     * @param float $discountRate   折扣率（0.8 = 8折）
+     * @param array $applicableTags 适用的商品标签，空数组表示不限标签
+     * @param int   $priority       优先级（数值越小优先级越高）
      */
     public function __construct(float $discountRate, array $applicableTags = [], int $priority = 1)
     {
@@ -33,61 +41,26 @@ class VipDiscountRule implements PromotionRuleInterface
     }
 
     /**
-     * 应用满减规则
-     * 
-     * @param Cart $cart 购物车对象
-     * @param User $user 用户对象
-     * @param array $eligibleIndexes 符合条件的商品下标列表
-     * 
-     * @return PromotionResult 规则应用结果（包含优惠金额 & 描述）
+     * 应用 VIP 折扣规则
+     *
+     * 仅当用户为 VIP 时触发，对符合条件的商品总额打折。
+     *
+     * @param Cart  $cart             购物车对象
+     * @param User  $user             用户对象
+     * @param array $eligibleIndexes  符合条件的商品下标列表（锁模式使用）
+     *
+     * @return PromotionResult 规则应用结果
      */
     public function apply(Cart $cart, User $user, array $eligibleIndexes = []): PromotionResult
     {
         if (!$user->isVip()) {
             return new PromotionResult(0, "非VIP用户");
         }
-        $items = array_flip($eligibleIndexes) ? array_intersect_key($cart->filterItemsByTags($this->applicableTags), array_flip($eligibleIndexes)) : $cart->filterItemsByTags($this->applicableTags);
+
+        $items = $this->filterEligibleItems($cart, $eligibleIndexes);
         $eligibleTotal = $cart->calculateItemsTotal($items);
         $discount = $eligibleTotal * (1 - $this->discountRate);
-        return new PromotionResult($discount, "VIP {$this->discountRate} 折");
-    }
 
-    /**
-     * 找出所有符合标签的商品下标
-     * 
-     * @param Cart $cart 
-     * 
-     * @return array 
-     */
-    public function getApplicableItems(Cart $cart): array
-    {
-        $items = $cart->getItems();
-        $indexes = [];
-        foreach ($items as $i => $item) {
-            if (empty($this->applicableTags) || count(array_intersect($this->applicableTags, $item['tags'])) > 0) {
-                $indexes[] = $i;
-            }
-        }
-        return $indexes;
-    }
-
-    /**
-     * 获取规则优先级
-     * 
-     * @return int 
-     */
-    public function getPriority(): int
-    {
-        return $this->priority;
-    }
-
-    /**
-     * 获取适用的商品标签
-     * 
-     * @return array 
-     */
-    public function getApplicableTags(): array
-    {
-        return $this->applicableTags;
+        return new PromotionResult($discount, "VIP " . ($this->discountRate * 10) . " 折");
     }
 }

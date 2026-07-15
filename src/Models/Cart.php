@@ -1,7 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\PromotionEngine\Models;
 
+/**
+ * 购物车模型
+ *
+ * 管理购物车中的商品列表，提供添加商品、查询总价/总数量、
+ * 按标签过滤、价格分摊修改、商品锁定等操作。
+ *
+ * @package Hejunjie\PromotionEngine\Models
+ */
 class Cart
 {
     protected array $items = [];
@@ -50,13 +60,18 @@ class Cart
     }
 
     /**
-     * 获取购物车中商品的数量
-     * 
-     * @return int 
+     * 获取购物车中商品的总数量
+     *
+     * 可传入可选的商品数组进行过滤计数；不传时统计全部商品。
+     *
+     * @param array|null $items 可选，传入过滤后的商品数组进行计数
+     *
+     * @return int 商品总数量
      */
-    public function getItemCount(): int
+    public function getItemCount(?array $items = null): int
     {
-        return array_reduce($this->items, fn($sum, $item) => $sum + $item['qty'], 0);
+        $items = $items ?? $this->items;
+        return array_reduce($items, fn($sum, $item) => $sum + $item['qty'], 0);
     }
 
     /**

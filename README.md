@@ -1,9 +1,6 @@
 # 🛒 hejunjie/promotion-engine
 
-<div align="center">
-  <a href="./README.md">English</a>｜<a href="./README.zh-CN.md">简体中文</a>
-  <hr width="50%"/>
-</div>
+English ｜ [简体中文](./README.zh-CN.md)
 
 A **flexible and scalable** PHP promotional strategy engine that enables various complex promotional logics (money off, discounts, tiered offers, member discounts, etc.) in shopping carts to be implemented more elegantly and maintainably.
 
